@@ -11,7 +11,6 @@ import {
   Dimensions,
 } from 'react-native';
 import { useBudget, categories } from '@/context/BudgetContext';
-import { router } from 'expo-router';
 import { Toast } from '@/components/Toast';
 import { LinearGradient } from 'expo-linear-gradient';
 import { format } from 'date-fns';
