@@ -7,6 +7,9 @@ import {
   TouchableOpacity,
   Platform,
   Dimensions,
+  Pressable,
+  Modal,
+  TextInput,
 } from 'react-native';
 import { useBudget, BudgetEntry } from '@/context/BudgetContext';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
@@ -31,17 +34,25 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 
 export default function Dashboard() {
-  const { entries, deleteEntry, totalIncome, totalExpenses, balance } =
-    useBudget();
+  const {
+    entries,
+    deleteEntry,
+    totalIncome,
+    totalExpenses,
+    balance,
+    weeklyBudget,
+    updateWeeklyBudget,
+  } = useBudget();
   const [toast, setToast] = React.useState({
     visible: false,
     message: '',
     type: 'success' as const,
   });
+  const [isModalVisible, setIsModalVisible] = React.useState(false);
+  const [newBudget, setNewBudget] = React.useState('');
 
   const weekStart = startOfWeek(new Date());
   const weekEnd = endOfWeek(new Date());
-  const weeklyBudget = 815;
   const weeklySpent = entries
     .filter((entry) => {
       const entryDate = new Date(entry.date);
@@ -68,6 +79,17 @@ export default function Dashboard() {
     },
     [deleteEntry]
   );
+
+  const handleUpdateBudget = () => {
+    const amount = parseFloat(newBudget);
+    if (isNaN(amount) || amount <= 0) {
+      showToast('Please enter a valid amount', 'error');
+      return;
+    }
+    updateWeeklyBudget(amount);
+    setIsModalVisible(false);
+    showToast('Weekly budget updated successfully', 'success');
+  };
 
   return (
     <View style={styles.container}>
@@ -97,9 +119,35 @@ export default function Dashboard() {
         </View>
 
         <View style={styles.budgetCard}>
-          <View style={styles.budgetHeader}>
-            <PiggyBank size={24} color="#fff" />
-            <Text style={styles.budgetTitle}>Weekly Budget</Text>
+          <View
+            style={[
+              styles.budgetHeader,
+              {
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              },
+            ]}
+          >
+            <View>
+              <PiggyBank size={24} color="#fff" />
+              <Text style={styles.budgetTitle}>Weekly Budget</Text>
+            </View>
+
+            <Pressable
+              onPress={() => {
+                setNewBudget(weeklyBudget.toString());
+                setIsModalVisible(true);
+              }}
+            >
+              <Text
+                style={{
+                  color: '#fff',
+                  fontWeight: 'bold',
+                }}
+              >
+                Edit limit
+              </Text>
+            </Pressable>
           </View>
           <Text style={styles.budgetAmount}>${weeklySpent.toFixed(2)}</Text>
           <View style={styles.progressBar}>
@@ -183,6 +231,41 @@ export default function Dashboard() {
           ))}
         </ScrollView>
       </View>
+
+      <Modal
+        visible={isModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Edit Weekly Budget</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={newBudget}
+              onChangeText={setNewBudget}
+              keyboardType="decimal-pad"
+              placeholder="Enter new budget amount"
+              placeholderTextColor="#94a3b8"
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setIsModalVisible(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.saveButton]}
+                onPress={handleUpdateBudget}
+              >
+                <Text style={styles.saveButtonText}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <Toast
         visible={toast.visible}
@@ -341,5 +424,60 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_400Regular',
     color: '#9ca3af',
     marginTop: 4,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 20,
+    width: '80%',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: 'Inter_600SemiBold',
+    color: '#1f2937',
+    marginBottom: 16,
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    fontFamily: 'Inter_400Regular',
+    color: '#1f2937',
+    marginBottom: 16,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  modalButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#e5e7eb',
+    marginRight: 8,
+  },
+  saveButton: {
+    backgroundColor: '#8b5cf6',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontFamily: 'Inter_500Medium',
+    color: '#1f2937',
+  },
+  saveButtonText: {
+    fontSize: 16,
+    fontFamily: 'Inter_500Medium',
+    color: '#ffffff',
   },
 });

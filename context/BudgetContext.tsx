@@ -18,6 +18,8 @@ type BudgetContextType = {
   totalIncome: number;
   totalExpenses: number;
   balance: number;
+  weeklyBudget: number;
+  updateWeeklyBudget: (amount: number) => void;
 };
 
 const BudgetContext = createContext<BudgetContextType | undefined>(undefined);
@@ -38,6 +40,7 @@ export const categories = [
 
 export function BudgetProvider({ children }: { children: React.ReactNode }) {
   const [entries, setEntries] = useState<BudgetEntry[]>([]);
+  const [weeklyBudget, setWeeklyBudget] = useState(810);
   const database = useSQLiteContext();
 
   useEffect(() => {
@@ -117,6 +120,10 @@ export function BudgetProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateWeeklyBudget = (amount: number) => {
+    setWeeklyBudget(amount);
+  };
+
   const totalIncome = entries
     .filter((entry) => entry.type === 'income')
     .reduce((sum, entry) => sum + entry.amount, 0);
@@ -137,6 +144,8 @@ export function BudgetProvider({ children }: { children: React.ReactNode }) {
         totalIncome,
         totalExpenses,
         balance,
+        weeklyBudget,
+        updateWeeklyBudget,
       }}
     >
       {children}
