@@ -26,12 +26,7 @@ import {
   Circle as XCircle,
   Clock,
 } from 'lucide-react-native';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  FadeInUp,
-  Layout,
-} from 'react-native-reanimated';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 const { width } = Dimensions.get('window');
