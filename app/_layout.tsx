@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, Redirect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import {
@@ -10,6 +10,7 @@ import {
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
 import { BudgetProvider } from '@/context/BudgetContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { SQLiteDatabase, SQLiteProvider } from 'expo-sqlite';
 
 const createDbIfNeeded = async (db: SQLiteDatabase) => {
@@ -31,6 +32,15 @@ const createDbIfNeeded = async (db: SQLiteDatabase) => {
   }
 };
 
+function ProtectedLayout() {
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+    </Stack>
+  );
+}
+
 export default function RootLayout() {
   useFrameworkReady();
 
@@ -47,13 +57,12 @@ export default function RootLayout() {
 
   return (
     <SQLiteProvider databaseName="test.db" onInit={createDbIfNeeded}>
-      <BudgetProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </BudgetProvider>
+      <AuthProvider>
+        <BudgetProvider>
+          <ProtectedLayout />
+          <StatusBar style="auto" />
+        </BudgetProvider>
+      </AuthProvider>
     </SQLiteProvider>
   );
 }

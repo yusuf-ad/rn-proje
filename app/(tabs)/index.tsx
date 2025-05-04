@@ -23,6 +23,7 @@ import {
   PiggyBank,
   ArrowUpRight,
   ArrowDownRight,
+  LogOut,
 } from 'lucide-react-native';
 import Animated, {
   FadeIn,
@@ -31,7 +32,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Toast } from '@/components/Toast';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Link } from 'expo-router';
+import { Link, Redirect } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Dashboard() {
   const {
@@ -43,10 +45,14 @@ export default function Dashboard() {
     weeklyBudget,
     updateWeeklyBudget,
   } = useBudget();
-  const [toast, setToast] = React.useState({
+  const [toast, setToast] = React.useState<{
+    visible: boolean;
+    message: string;
+    type: 'success' | 'error';
+  }>({
     visible: false,
     message: '',
-    type: 'success' as const,
+    type: 'success',
   });
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [newBudget, setNewBudget] = React.useState('');
@@ -91,6 +97,13 @@ export default function Dashboard() {
     showToast('Weekly budget updated successfully', 'success');
   };
 
+  const { user, logout } = useAuth();
+
+  // If user is not authenticated, redirect to login
+  if (!user) {
+    return <Redirect href="/login" />;
+  }
+
   return (
     <View style={styles.container}>
       <LinearGradient colors={['#8b5cf6', '#7c3aed']} style={styles.header}>
@@ -99,6 +112,24 @@ export default function Dashboard() {
             <Wallet size={24} color="#fff" />
             <Text style={styles.title}>Balance: ${balance.toFixed(2)}</Text>
           </View>
+          <Pressable
+            onPress={logout}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+          >
+            <LogOut color={'#fff'} />
+            <Text
+              style={{
+                fontSize: 16,
+                color: '#fff',
+                fontWeight: 'bold',
+              }}
+            >
+              Logout
+            </Text>
+          </Pressable>
         </View>
 
         <View style={styles.statsContainer}>
@@ -169,7 +200,6 @@ export default function Dashboard() {
 
       <View style={styles.content}>
         <Text style={styles.sectionTitle}>Recent Transactions</Text>
-        <Link href={'/signup'}>kaydoll</Link>
         <ScrollView
           style={styles.entriesList}
           showsVerticalScrollIndicator={false}

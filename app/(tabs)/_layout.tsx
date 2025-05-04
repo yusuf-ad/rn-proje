@@ -1,5 +1,11 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, ChartBar as BarChart2, ArrowRightLeft, Battery as Category, Settings } from 'lucide-react-native';
+import {
+  Chrome as Home,
+  ChartBar as BarChart2,
+  ArrowRightLeft,
+  Battery as Category,
+  Settings,
+} from 'lucide-react-native';
 import { View } from 'react-native';
 
 export default function TabLayout() {
@@ -28,7 +34,8 @@ export default function TabLayout() {
         tabBarActiveTintColor: '#7c3aed',
         tabBarInactiveTintColor: '#9ca3af',
         headerShown: false,
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -36,33 +43,22 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
         }}
       />
-            <Tabs.Screen
+      <Tabs.Screen
         name="add"
         options={{
           title: 'Transactions',
-          tabBarIcon: ({ color, size }) => <ArrowRightLeft size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <ArrowRightLeft size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="reports"
         options={{
           title: 'Graph',
-          tabBarIcon: ({ color, size }) => <BarChart2 size={size} color={color} />,
-        }}
-      />
-
-      <Tabs.Screen
-        name="category"
-        options={{
-          title: 'Category',
-          tabBarIcon: ({ color, size }) => <Category size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Settings',
-          tabBarIcon: ({ color, size }) => <Settings size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <BarChart2 size={size} color={color} />
+          ),
         }}
       />
     </Tabs>

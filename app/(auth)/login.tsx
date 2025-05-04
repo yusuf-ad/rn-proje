@@ -7,11 +7,13 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Login() {
   const router = useRouter();
+  const { setUser } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -31,9 +33,13 @@ export default function Login() {
       );
 
       if (user) {
-        console.log('Login successful for user:', user);
-        // Navigate to the main app screen
+        // Set the user in AuthContext
+        setUser({
+          id: user.id,
+          email: user.email,
+        });
 
+        // Router.replace will prevent going back to login
         router.replace('/');
       } else {
         Alert.alert('Login Failed', 'Invalid email or password.');
@@ -46,6 +52,13 @@ export default function Login() {
       );
     }
   };
+
+  const { user } = useAuth();
+
+  // If user is not authenticated, redirect to login
+  if (user) {
+    return <Redirect href="/" />;
+  }
 
   return (
     <View style={styles.container}>

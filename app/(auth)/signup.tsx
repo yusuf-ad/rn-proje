@@ -7,11 +7,13 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Signup() {
   const router = useRouter();
+  const { setUser } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -38,13 +40,14 @@ export default function Signup() {
 
       const userId = result.lastInsertRowId;
 
-      // setCurrentUser({
-      //   id: userId,
-      //   goal: 2400,
-      //   lastLoginTime: new Date().toISOString(),
-      // });
+      // Set the user in AuthContext
+      setUser({
+        id: userId,
+        email,
+      });
 
-      router.navigate('/');
+      // Router.replace will prevent going back to login
+      router.replace('/');
     } catch (error) {
       console.error('Signup failed:', error);
       Alert.alert(
@@ -53,6 +56,13 @@ export default function Signup() {
       );
     }
   };
+
+  const { user } = useAuth();
+
+  // If user is not authenticated, redirect to login
+  if (user) {
+    return <Redirect href="/" />;
+  }
 
   return (
     <View style={styles.container}>
