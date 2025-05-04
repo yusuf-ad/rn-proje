@@ -5,8 +5,10 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
 
 export default function Signup() {
   const router = useRouter();
@@ -14,9 +16,42 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSignup = () => {
-    // TODO: implement signup
-    console.log('Signup', { email, password, confirmPassword });
+  const database = useSQLiteContext();
+
+  const handleSignup = async () => {
+    // Basic validation
+    if (!confirmPassword || !email || !password) {
+      Alert.alert('Error', 'Please fill in all fields.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match.');
+      return;
+    }
+
+    try {
+      const result = await database.runAsync(
+        'INSERT INTO user (email, password) VALUES (?, ?)',
+        [email, password]
+      );
+
+      const userId = result.lastInsertRowId;
+
+      // setCurrentUser({
+      //   id: userId,
+      //   goal: 2400,
+      //   lastLoginTime: new Date().toISOString(),
+      // });
+
+      router.navigate('/');
+    } catch (error) {
+      console.error('Signup failed:', error);
+      Alert.alert(
+        'Signup Failed',
+        'Could not create account. Please try again.'
+      );
+    }
   };
 
   return (

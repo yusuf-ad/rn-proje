@@ -27,6 +27,7 @@ import {
 } from 'lucide-react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { router } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
@@ -36,10 +37,14 @@ export default function AddEntry() {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [type, setType] = useState<'income' | 'expense'>('expense');
-  const [toast, setToast] = useState({
+  const [toast, setToast] = useState<{
+    visible: boolean;
+    message: string;
+    type: 'success' | 'error';
+  }>({
     visible: false,
     message: '',
-    type: 'success' as const,
+    type: 'success',
   });
 
   const progress = Math.min(
@@ -89,12 +94,9 @@ export default function AddEntry() {
         'success'
       );
 
-      // setTimeout(() => {
-      //   setAmount('');
-      //   setDescription('');
-      //   setCategory('');
-      //   router.push('/');
-      // }, 1500);
+      setAmount('');
+      setDescription('');
+      setCategory('');
     } catch (error) {
       showToast('Failed to add entry', 'error');
     }

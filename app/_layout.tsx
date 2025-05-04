@@ -24,7 +24,7 @@ const createDbIfNeeded = async (db: SQLiteDatabase) => {
 
     console.log('Creating users table');
     await db.execAsync(
-      'CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, password TEXT, goal INTEGER DEFAULT 2400, lastLoginTime TEXT);'
+      'CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT, password TEXT);'
     );
   } catch (error) {
     console.error('Error creating database:', error);

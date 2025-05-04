@@ -5,17 +5,46 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // TODO: implement login
-    console.log('Login', { email, password });
+  const database = useSQLiteContext();
+
+  const handleLogin = async () => {
+    // Basic validation
+    if (!email || !password) {
+      Alert.alert('Validation Error', 'Please enter both email and password.');
+      return;
+    }
+
+    try {
+      const user = await database.getFirstAsync<any>(
+        'SELECT * FROM user WHERE email = ? AND password = ?;',
+        [email, password]
+      );
+
+      if (user) {
+        console.log('Login successful for user:', user);
+        // Navigate to the main app screen
+
+        router.replace('/');
+      } else {
+        Alert.alert('Login Failed', 'Invalid email or password.');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      Alert.alert(
+        'Login Error',
+        'An error occurred during login. Please try again.'
+      );
+    }
   };
 
   return (
