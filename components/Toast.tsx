@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
-import { CircleCheck as CheckCircle2, CircleAlert as AlertCircle } from 'lucide-react-native';
+import {
+  CircleCheck as CheckCircle2,
+  CircleAlert as AlertCircle,
+} from 'lucide-react-native';
 
 type ToastType = 'success' | 'error';
 
@@ -40,7 +43,8 @@ export function Toast({ visible, message, type, onHide }: ToastProps) {
         styles.container,
         { opacity },
         type === 'success' ? styles.successBg : styles.errorBg,
-      ]}>
+      ]}
+    >
       {type === 'success' ? (
         <CheckCircle2 size={24} color="#fff" />
       ) : (
@@ -54,7 +58,7 @@ export function Toast({ visible, message, type, onHide }: ToastProps) {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 60,
+    top: 50,
     left: 20,
     right: 20,
     backgroundColor: '#000',

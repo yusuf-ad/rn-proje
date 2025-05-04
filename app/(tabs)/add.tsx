@@ -90,12 +90,12 @@ export default function AddEntry() {
         'success'
       );
 
-      setTimeout(() => {
-        setAmount('');
-        setDescription('');
-        setCategory('');
-        router.push('/');
-      }, 1500);
+      // setTimeout(() => {
+      //   setAmount('');
+      //   setDescription('');
+      //   setCategory('');
+      //   router.push('/');
+      // }, 1500);
     } catch (error) {
       showToast('Failed to add entry', 'error');
     }
